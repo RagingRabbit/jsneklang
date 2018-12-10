@@ -1,0 +1,39 @@
+package main;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import main.Tokenizer.Token;
+
+public class Main {
+	private static String loadFile(String path) {
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(new File(path)));
+			StringBuilder result = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				result.append(line).append("\n");
+			}
+			reader.close();
+			return result.toString();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static void main(String[] args) {
+		String input = loadFile("src/input.txt");
+		Tokenizer.addDefinition(1, "-?\\d+", 1);
+		List<Token> tokens = new ArrayList<Token>();
+		Tokenizer.run(input, tokens);
+	}
+}

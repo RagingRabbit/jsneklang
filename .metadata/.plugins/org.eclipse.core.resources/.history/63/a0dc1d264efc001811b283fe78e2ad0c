@@ -1,0 +1,47 @@
+import java.util.HashMap;
+import java.util.Vector;
+
+public class Tokenizer {
+	static Vector<TokenDef> definitions;
+	
+	static {
+		definitions = new Vector<TokenDef>();
+	}
+	
+	public static void run(String src, Vector<Token> tokens) {
+		Vector<TokenMatch> matches = new Vector<TokenMatch>();
+		for (TokenDef def : definitions) {
+			findMatches(src, def, matches);
+		}
+		
+		HashMap<Integer, Vector<TokenMatch>> groupedMatches = new HashMap<Integer, Vector<TokenMatch>>();
+		for (TokenMatch match : matches) {
+			if (groupedMatches.get(match.start) == null) {
+				groupedMatches.put(match.start, new Vector<TokenMatch>());
+			}
+			groupedMatches.get(match.start).add(match);
+		}
+	}
+	
+	private static void findMatches(String input, TokenDef def, Vector<TokenMatch> matches) {
+		
+	}
+	
+	public static class Token {
+		public int type;
+		public String val;
+	}
+	
+	public static class TokenDef {
+		public String regex;
+		public int type;
+		public int precedence;
+	}
+	
+	public static class TokenMatch {
+		public int type;
+		public String val;
+		public int start, end;
+		public int precedence;
+	}
+}

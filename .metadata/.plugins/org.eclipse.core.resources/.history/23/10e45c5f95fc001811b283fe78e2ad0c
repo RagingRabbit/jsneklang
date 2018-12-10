@@ -1,0 +1,28 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class Main {
+	private static String loadFile(String path) {
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(new File(path)));
+			StringBuilder result = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				result.append(line).append("\n");
+			}
+			reader.close();
+			return result.toString();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+	}
+}
