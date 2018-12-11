@@ -1,0 +1,97 @@
+package rb.compiler;
+
+import java.util.List;
+import java.util.function.Predicate;
+
+import rb.compiler.Tokenizer.Token;
+
+public class Lexer {
+	static final int TOKEN_UNDEFINED = 0,
+			TOKEN_EOL = 1,
+			TOKEN_LINE_COMMENT = 2,
+			TOKEN_PAREN_LEFT = 10,
+			TOKEN_PAREN_RIGHT = 11,
+			TOKEN_CURLY_LEFT = 12,
+			TOKEN_CURLY_RIGHT = 13,
+			TOKEN_SQUARE_LEFT = 14,
+			TOKEN_SQUARE_RIGHT = 15,
+			TOKEN_ASSIGN = 20,
+			TOKEN_STRING = 30,
+			TOKEN_INTEGER = 31,
+			TOKEN_BOOLEAN = 32,
+			TOKEN_IDENTIFIER = 40;
+	
+	public static void run(String src, List<Token> tokens) {
+		Tokenizer.addDefinition(TOKEN_EOL, "\n", 1);
+		Tokenizer.addDefinition(TOKEN_LINE_COMMENT, "#.*$", 1);
+		
+		Tokenizer.addDefinition(TOKEN_PAREN_LEFT, "\\(", 2);
+		Tokenizer.addDefinition(TOKEN_PAREN_RIGHT, "\\)", 2);
+		Tokenizer.addDefinition(TOKEN_CURLY_LEFT, "\\{", 2);
+		Tokenizer.addDefinition(TOKEN_CURLY_RIGHT, "\\}", 2);
+		Tokenizer.addDefinition(TOKEN_SQUARE_LEFT, "\\[", 2);
+		Tokenizer.addDefinition(TOKEN_SQUARE_RIGHT, "\\]", 2);
+		
+		Tokenizer.addDefinition(TOKEN_ASSIGN, "=", 2);
+		
+		Tokenizer.addDefinition(TOKEN_STRING, "\".*\"", 2);
+		Tokenizer.addDefinition(TOKEN_INTEGER, "\\b\\d+\\b", 2);
+		Tokenizer.addDefinition(TOKEN_BOOLEAN, "\\b(true|false)\\b", 2);
+		
+		Tokenizer.addDefinition(TOKEN_IDENTIFIER, "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b", 2);
+		
+		Tokenizer.run(src, tokens);
+		
+		tokens.removeIf(new Predicate<Token>() {
+			@Override
+			public boolean test(Token t) {
+				return t.type == TOKEN_LINE_COMMENT;
+			}
+		});
+	}
+	
+	public static String getTypeStr(int type) {
+		switch (type) {
+		case TOKEN_UNDEFINED:
+			return "UNDEFINED";
+		case TOKEN_EOL:
+			return "EOL";
+		case TOKEN_LINE_COMMENT:
+			return "LINE_COMMENT";
+		case TOKEN_SEMICOLON:
+			return "SEMICOLON";
+		case TOKEN_COMMA:
+			return "COMMA";
+		case TOKEN_ASTERIX:
+			return "ASTERIX";
+		case TOKEN_ASSIGN:
+			return "EQUALS";
+		case TOKEN_PAREN_LEFT:
+			return "PAREN_LEFT";
+		case TOKEN_PAREN_RIGHT:
+			return "PAREN_RIGHT";
+		case TOKEN_CURLY_LEFT:
+			return "CURLY_LEFT";
+		case TOKEN_CURLY_RIGHT:
+			return "CURLY_RIGHT";
+		case TOKEN_SQUARE_LEFT:
+			return "SQUARE_LEFT";
+		case TOKEN_SQUARE_RIGHT:
+			return "SQUARE_RIGHT";
+		case TOKEN_STRING:
+			return "STRING";
+		case TOKEN_INTEGER:
+			return "INTEGER";
+		case TOKEN_IMPORT:
+			return "IMPORT";
+		case TOKEN_IF:
+			return "IF";
+		case TOKEN_ELSE:
+			return "ELSE";
+		case TOKEN_IDENTIFIER:
+			return "IDENTIFIER";
+		default:
+			return "NULL";
+		}
+	}
+}

@@ -1,0 +1,12 @@
+package rb.compiler;
+
+import java.util.List;
+
+import rb.compiler.Tokenizer.Token;
+
+public class Lexer {
+	private static final int TOKEN_UNDEFINED = 0, TOKEN_EOL = 1;
+
+	public static void run(String src, List<Token> tokens) {
+	}
+}

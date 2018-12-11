@@ -1,0 +1,6 @@
+print("hello world")
+print("blablabla");
+a = 5
+print(a)
+b = true
+print(b)

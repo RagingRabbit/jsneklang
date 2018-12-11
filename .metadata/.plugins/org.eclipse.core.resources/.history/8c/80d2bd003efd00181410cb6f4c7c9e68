@@ -1,0 +1,5 @@
+package rb.compiler.utils;
+
+public class IntPtr {
+	
+}

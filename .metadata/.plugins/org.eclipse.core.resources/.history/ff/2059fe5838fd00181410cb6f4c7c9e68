@@ -1,0 +1,36 @@
+package rb.compiler;
+
+import java.util.List;
+
+import rb.compiler.Tokenizer.Token;
+
+public class Lexer {
+	private static final int TOKEN_UNDEFINED = 0,
+			TOKEN_EOL = 1,
+			TOKEN_LINE_COMMENT = 2,
+			TOKEN_PAREN_LEFT = 10,
+			TOKEN_PAREN_RIGHT = 11,
+			TOKEN_CURLY_LEFT = 12,
+			TOKEN_CURLY_RIGHT = 13,
+			TOKEN_SQUARE_LEFT = 14,
+			TOKEN_SQUARE_RIGHT = 15,
+			TOKEN_ASSIGN = 20,
+			TOKEN_STRING = 30,
+			TOKEN_INTEGER = 31,
+			TOKEN_BOOLEAN = 32,
+			TOKEN_IDENTIFIER = 40;
+
+	public static void run(String src, List<Token> tokens) {
+		Tokenizer.addDefinition(TOKEN_EOL, "\n", 1);
+		Tokenizer.addDefinition(TOKEN_LINE_COMMENT, "#.*$", 1);
+
+		Tokenizer.addDefinition(TOKEN_PAREN_LEFT, "\\(", 2);
+		Tokenizer.addDefinition(TOKEN_PAREN_RIGHT, "\\)", 2);
+		Tokenizer.addDefinition(TOKEN_CURLY_LEFT, "\\{", 2);
+		Tokenizer.addDefinition(TOKEN_CURLY_RIGHT, "\\}", 2);
+		Tokenizer.addDefinition(TOKEN_SQUARE_LEFT, "\\[", 2);
+		Tokenizer.addDefinition(TOKEN_SQUARE_RIGHT, "\\]", 2);
+
+		Tokenizer.addDefinition(TOKEN_ASSIGN, "=", 2);
+	}
+}
