@@ -26,7 +26,10 @@ public class Parser {
 			EXPR_VAR_DECL = 7,
 			EXPR_FUNC_CALL = 8;
 	
+	private static Syntax syntax;
+	
 	public static void run(List<Token> tokens, Syntax syntax) {
+		Parser.syntax = syntax;
 		for (IntPtr i = new IntPtr(); i.val < tokens.size();) {
 			Statement statement = null;
 			if ((statement = parseStatement(tokens, i)) != null) {
@@ -39,6 +42,11 @@ public class Parser {
 	}
 	
 	private static Statement parseStatement(List<Token> tokens, IntPtr i) {
+		// Import statement
+		if (tokens.size() - i.val >= 2 && tokens.get(i.val).type == TOKEN_KWORD_IMPORT) {
+			return parseImportStatement(tokens, i);
+		}
+		
 		// No operation statement
 		if (tokens.size() - i.val >= 1 && tokens.get(i.val).type == TOKEN_EOL) {
 			i.val++;
@@ -49,6 +57,20 @@ public class Parser {
 		{
 			return parseExpressionStatement(tokens, i);
 		}
+	}
+	
+	private static Statement parseImportStatement(List<Token> tokens, IntPtr i) {
+		int eol = findToken(tokens, TOKEN_EOL, i.val + 2);
+		if (eol == -1) {
+			// TODO ERROR
+		}
+		String name = tokens.get(i.val + 1).val;
+		i.val = eol + 1;
+		
+		Import imp = new Import();
+		imp.name = name;
+		syntax.imports.add(imp);
+		return null;
 	}
 	
 	private static Statement parseExpressionStatement(List<Token> tokens, IntPtr i) {
@@ -223,6 +245,11 @@ public class Parser {
 	}
 	
 	static class Syntax extends CodeBlock {
+		String name;
+		List<Import> imports = new ArrayList<Import>();
+	}
+	
+	static class Import {
 		String name;
 	}
 	

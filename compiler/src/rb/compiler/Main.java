@@ -7,10 +7,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.qmx.jitescript.JiteClass;
+import rb.compiler.Parser.Import;
 import rb.compiler.Parser.Syntax;
 import rb.compiler.Tokenizer.Token;
 
@@ -48,7 +50,7 @@ public class Main {
 		System.out.println();
 		
 		if (INTERPRET) {
-			interpretUnit(unit);
+			interpretUnit(unit, syntax);
 		} else {
 			compileUnit(unit);
 		}
@@ -56,11 +58,15 @@ public class Main {
 		// runCommand("java -cp D:/Projects/jsneklang " + "main");
 	}
 	
-	private static void interpretUnit(JiteClass unit) {
+	private static void interpretUnit(JiteClass unit, Syntax syntax) {
 		try {
 			byte[] bytes = unit.toBytes();
 			Class<?> c = new ClassLoader() {
 				Class<?> define(byte[] bytes) {
+					for (Import imp : syntax.imports) {
+						byte[] classBytes = loadClassBytes(imp.name + ".class");
+						defineClass(imp.name, classBytes, 0, classBytes.length);
+					}
 					return defineClass(unit.getClassName(), bytes, 0, bytes.length);
 				}
 			}.define(bytes);
@@ -102,6 +108,15 @@ public class Main {
 			}
 			System.out.println(type + ":" + empty + token.val);
 		}
+	}
+	
+	private static byte[] loadClassBytes(String path) {
+		try {
+			return Files.readAllBytes(new File(path).toPath());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	private static String loadFile(String path) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <typeInfoHistroy>
-<typeInfo handle="=compiler/src&lt;rb.compiler{Lexer.java[Lexer" modifiers="1" timestamp="1544534760285"/>
-<typeInfo handle="=JVMCompiler/src&lt;xyz.jpg.main{Parser.java[Parser" modifiers="1" timestamp="1535312476714"/>
-<typeInfo handle="=compiler/src&lt;rb.compiler{Parser.java[Parser" modifiers="1" timestamp="1544562911370"/>
-<typeInfo handle="=compiler/src&lt;rb.compiler{Main.java[Main" modifiers="1" timestamp="1544560437145"/>
+<typeInfo handle="=compiler/src&lt;rb.compiler{Main.java[Main" modifiers="1" timestamp="1544646527741"/>
+<typeInfo handle="=compiler/src&lt;rb.compiler{Parser.java[Parser[Syntax" modifiers="8" timestamp="1544646234303"/>
+<typeInfo handle="=compiler/src&lt;rb.compiler{Lexer.java[Lexer" modifiers="1" timestamp="1544645346435"/>
+<typeInfo handle="=compiler/src&lt;rb.compiler{Parser.java[Parser" modifiers="1" timestamp="1544646234303"/>
 </typeInfoHistroy>

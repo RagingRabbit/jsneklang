@@ -24,7 +24,9 @@ public class Lexer {
 			TOKEN_INTEGER = 31,
 			TOKEN_BOOLEAN = 32,
 			
-			TOKEN_IDENTIFIER = 40;
+			TOKEN_IDENTIFIER = 40,
+			
+			TOKEN_KWORD_IMPORT = 50;
 	
 	public static void run(String src, List<Token> tokens) {
 		Tokenizer.addDefinition(TOKEN_EOL, "\n", 1);
@@ -42,6 +44,8 @@ public class Lexer {
 		Tokenizer.addDefinition(TOKEN_STRING, "\".*\"", 2);
 		Tokenizer.addDefinition(TOKEN_INTEGER, "\\b\\d+\\b", 2);
 		Tokenizer.addDefinition(TOKEN_BOOLEAN, "\\b(true|false)\\b", 2);
+		
+		Tokenizer.addDefinition(TOKEN_KWORD_IMPORT, "\\bimport\\b", 2);
 		
 		Tokenizer.addDefinition(TOKEN_IDENTIFIER, "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b", 3);
 		

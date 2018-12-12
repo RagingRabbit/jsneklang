@@ -5,7 +5,6 @@ import static org.objectweb.asm.Opcodes.*;
 import static rb.compiler.Parser.*;
 
 import java.io.PrintStream;
-import java.util.List;
 
 import me.qmx.jitescript.CodeBlock;
 import me.qmx.jitescript.JiteClass;
@@ -13,6 +12,7 @@ import rb.compiler.Parser.Expression;
 import rb.compiler.Parser.ExpressionStatement;
 import rb.compiler.Parser.FuncCallExpression;
 import rb.compiler.Parser.Statement;
+import rb.compiler.Parser.StringExpression;
 import rb.compiler.Parser.Syntax;
 
 public class Builder {
@@ -65,13 +65,14 @@ public class Builder {
 		
 		case EXPR_FUNC_CALL: {
 			FuncCallExpression e = (FuncCallExpression) expr;
-			block.getstatic(p(System.class), "out", ci(PrintStream.class));
+			//block.getstatic(p(System.class), "out", ci(PrintStream.class));
 			
 			for (Expression arg : e.args) {
 				buildExpression(arg, block);
 			}
 			
-			block.invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
+			block.invokestatic("cmdio", e.name, sig(void.class, String.class));
+			//block.invokevirtual(p(PrintStream.class), "println", sig(void.class, Object.class));
 			block.ldc(0);
 			break;
 		}
