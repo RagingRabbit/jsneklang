@@ -12,17 +12,17 @@ import java.util.regex.Pattern;
 
 public class Tokenizer {
 	static Vector<TokenDef> definitions;
-
+	
 	static {
 		definitions = new Vector<TokenDef>();
 	}
-
+	
 	public static void run(String src, List<Token> tokens) {
 		List<TokenMatch> matches = new ArrayList<TokenMatch>();
 		for (TokenDef def : definitions) {
 			findMatches(src, def, matches);
 		}
-
+		
 		Map<Integer, List<TokenMatch>> groupedMatches = new TreeMap<Integer, List<TokenMatch>>();
 		for (TokenMatch match : matches) {
 			if (groupedMatches.get(match.start) == null) {
@@ -30,7 +30,7 @@ public class Tokenizer {
 			}
 			groupedMatches.get(match.start).add(match);
 		}
-
+		
 		TokenMatch lastMatch = null;
 		for (int i : groupedMatches.keySet()) {
 			Collections.sort(groupedMatches.get(i), new Comparator<TokenMatch>() {
@@ -43,16 +43,16 @@ public class Tokenizer {
 			if (lastMatch != null && bestMatch.start < lastMatch.end) {
 				continue;
 			}
-
+			
 			Token token = new Token();
 			token.type = bestMatch.type;
 			token.val = bestMatch.val;
 			tokens.add(token);
-
+			
 			lastMatch = bestMatch;
 		}
 	}
-
+	
 	private static void findMatches(String input, TokenDef def, List<TokenMatch> matches) {
 		Pattern pattern = Pattern.compile(def.regex);
 		Matcher matcher = pattern.matcher(input);
@@ -66,7 +66,7 @@ public class Tokenizer {
 			matches.add(match);
 		}
 	}
-
+	
 	public static void addDefinition(int type, String regex, int precedence) {
 		TokenDef def = new TokenDef();
 		def.type = type;
@@ -74,22 +74,22 @@ public class Tokenizer {
 		def.precedence = precedence;
 		definitions.add(def);
 	}
-
+	
 	public static void removeDefinitions() {
 		definitions.clear();
 	}
-
+	
 	public static class Token {
 		public int type;
 		public String val;
 	}
-
+	
 	public static class TokenDef {
 		public String regex;
 		public int type;
 		public int precedence;
 	}
-
+	
 	public static class TokenMatch {
 		public int type;
 		public String val;

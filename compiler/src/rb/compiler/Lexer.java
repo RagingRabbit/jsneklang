@@ -30,7 +30,7 @@ public class Lexer {
 	
 	public static void run(String src, List<Token> tokens) {
 		Tokenizer.addDefinition(TOKEN_EOL, "\n", 1);
-		Tokenizer.addDefinition(TOKEN_LINE_COMMENT, "#.*$", 1);
+		Tokenizer.addDefinition(TOKEN_LINE_COMMENT, "\\#.*?\n", 1);
 		
 		Tokenizer.addDefinition(TOKEN_PAREN_LEFT, "\\(", 2);
 		Tokenizer.addDefinition(TOKEN_PAREN_RIGHT, "\\)", 2);

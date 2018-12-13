@@ -1,12 +1,14 @@
 package rb.compiler;
 
+import static rb.compiler.Lexer.*;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import rb.compiler.Tokenizer.Token;
 import rb.compiler.utils.IntPtr;
-
-import static rb.compiler.Lexer.*;
 
 public class Parser {
 	public static final int STATEMENT_UNDEFINED = 0,
@@ -14,7 +16,8 @@ public class Parser {
 			STATEMENT_COMPOUND = 2,
 			STATEMENT_EXPR = 3,
 			STATEMENT_IF = 4,
-			STATEMENT_ELSE = 5;
+			STATEMENT_ELSE = 5,
+			STATEMENT_IMPORT = 6;
 	
 	public static final int EXPR_UNDEFINED = 0,
 			EXPR_NULL = 1,
@@ -26,17 +29,13 @@ public class Parser {
 			EXPR_VAR_DECL = 7,
 			EXPR_FUNC_CALL = 8;
 	
-	private static Syntax syntax;
-	
 	public static void run(List<Token> tokens, Syntax syntax) {
-		Parser.syntax = syntax;
 		for (IntPtr i = new IntPtr(); i.val < tokens.size();) {
 			Statement statement = null;
 			if ((statement = parseStatement(tokens, i)) != null) {
 				syntax.statements.add(statement);
 			} else {
 				// TODO ERROR or optimized out
-				i.val++;
 			}
 		}
 	}
@@ -67,10 +66,9 @@ public class Parser {
 		String name = tokens.get(i.val + 1).val;
 		i.val = eol + 1;
 		
-		Import imp = new Import();
-		imp.name = name;
-		syntax.imports.add(imp);
-		return null;
+		ImportStatement result = new ImportStatement();
+		result.name = name;
+		return result;
 	}
 	
 	private static Statement parseExpressionStatement(List<Token> tokens, IntPtr i) {
@@ -163,7 +161,6 @@ public class Parser {
 			Expression expr = parseExpression(tokens, i);
 			
 			VarDeclExpression result = new VarDeclExpression();
-			result.type = getExprType(expr);
 			result.name = varName;
 			result.val = expr;
 			return result;
@@ -208,14 +205,6 @@ public class Parser {
 		return args;
 	}
 	
-	private static Class<?> getExprType(Expression expr) {
-		switch (expr.getType()) {
-		case EXPR_INTEGER:
-			return int.class;
-		}
-		return null;
-	}
-	
 	private static int findMatchingParen(List<Token> tokens, int start) {
 		int level = 1;
 		for (int i = start; i < tokens.size(); i++) {
@@ -240,17 +229,29 @@ public class Parser {
 		return -1;
 	}
 	
+	static class Variable {
+		String name;
+		Class<?> type;
+	}
+	
 	static class CodeBlock {
 		List<Statement> statements = new ArrayList<Statement>();
+		List<Integer> locals = new ArrayList<Integer>();
 	}
 	
 	static class Syntax extends CodeBlock {
 		String name;
-		List<Import> imports = new ArrayList<Import>();
-	}
-	
-	static class Import {
-		String name;
+		Map<Integer, Variable> vars = new HashMap<Integer, Variable>();
+		List<Class<?>> imports = new ArrayList<Class<?>>();
+		
+		void loadImport(String imp) {
+			try {
+				Class<?> c = Class.forName(imp);
+				imports.add(c);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	static abstract class Statement {
@@ -269,6 +270,14 @@ public class Parser {
 		}
 	}
 	
+	static class ImportStatement extends Statement {
+		String name;
+		
+		int getType() {
+			return STATEMENT_IMPORT;
+		}
+	}
+	
 	static class ExpressionStatement extends Statement {
 		Expression expr;
 		
@@ -278,13 +287,13 @@ public class Parser {
 	}
 	
 	static abstract class Expression {
-		abstract int getType();
+		abstract int getExprType();
 	}
 	
 	static class CompoundExpression extends Expression {
 		Expression expr;
 		
-		int getType() {
+		int getExprType() {
 			return EXPR_COMPOUND;
 		}
 	}
@@ -292,7 +301,7 @@ public class Parser {
 	static class IdentifierExpression extends Expression {
 		String name;
 		
-		int getType() {
+		int getExprType() {
 			return EXPR_IDENTIFIER;
 		}
 	}
@@ -300,7 +309,7 @@ public class Parser {
 	static class StringExpression extends Expression {
 		String val;
 		
-		int getType() {
+		int getExprType() {
 			return EXPR_STRING;
 		}
 	}
@@ -308,7 +317,7 @@ public class Parser {
 	static class IntExpression extends Expression {
 		int val;
 		
-		int getType() {
+		int getExprType() {
 			return EXPR_INTEGER;
 		}
 	}
@@ -316,17 +325,16 @@ public class Parser {
 	static class BoolExpression extends Expression {
 		boolean val;
 		
-		int getType() {
+		int getExprType() {
 			return EXPR_BOOLEAN;
 		}
 	}
 	
 	static class VarDeclExpression extends Expression {
-		Class<?> type;
 		String name;
 		Expression val;
 		
-		int getType() {
+		int getExprType() {
 			return EXPR_VAR_DECL;
 		}
 	}
@@ -335,7 +343,7 @@ public class Parser {
 		String name;
 		List<Expression> args = new ArrayList<Expression>();
 		
-		int getType() {
+		int getExprType() {
 			return EXPR_FUNC_CALL;
 		}
 	}

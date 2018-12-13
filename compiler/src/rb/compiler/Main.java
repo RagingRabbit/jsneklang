@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.qmx.jitescript.JiteClass;
-import rb.compiler.Parser.Import;
+import rb.compiler.Builder.CompilationUnit;
 import rb.compiler.Parser.Syntax;
 import rb.compiler.Tokenizer.Token;
 
@@ -35,7 +35,7 @@ public class Main {
 		long afterParse = System.currentTimeMillis();
 		
 		long beforeBuild = System.currentTimeMillis();
-		JiteClass unit = Builder.run(syntax);
+		CompilationUnit unit = Builder.run(syntax);
 		long afterBuild = System.currentTimeMillis();
 		
 		long lexTime = afterLex - beforeLex;
@@ -54,19 +54,13 @@ public class Main {
 		} else {
 			compileUnit(unit);
 		}
-		
-		// runCommand("java -cp D:/Projects/jsneklang " + "main");
 	}
 	
-	private static void interpretUnit(JiteClass unit, Syntax syntax) {
+	private static void interpretUnit(CompilationUnit unit, Syntax syntax) {
 		try {
 			byte[] bytes = unit.toBytes();
 			Class<?> c = new ClassLoader() {
 				Class<?> define(byte[] bytes) {
-					for (Import imp : syntax.imports) {
-						byte[] classBytes = loadClassBytes(imp.name + ".class");
-						defineClass(imp.name, classBytes, 0, classBytes.length);
-					}
 					return defineClass(unit.getClassName(), bytes, 0, bytes.length);
 				}
 			}.define(bytes);
